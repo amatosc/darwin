@@ -3,17 +3,17 @@ package models;
 
 import play.Play;
 
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Constants {
 
     public static class APIClient {
-        public static final String COLLECTION_NAME = Play.configuration.getProperty("Constants.APIClient.collectionName", "api_clients" );
+        public static final String COLLECTION_NAME = Play.configuration.getProperty("Constants.APIClient.collectionName", "api_clients");
         public static final String FIELD_NAME = Play.configuration.getProperty("Constants.APIClient.fieldName", "name");
-        public static final String FIELD_SECRET = Play.configuration.getProperty("Constants.APIClient.fieldSecret",  "secret");
+        public static final String FIELD_SECRET = Play.configuration.getProperty("Constants.APIClient.fieldSecret", "secret");
         public static final String FIELD_EMAIL = Play.configuration.getProperty("Constants.APIClient.fieldEmail", "email");
         public static final String FIELD_ID = Play.configuration.getProperty("Constants.APIClient.fieldId", "clientId");
     }
@@ -42,6 +42,7 @@ public class Constants {
         public static final int MIN_PASSWORD_LENGTH = Integer.parseInt(Play.configuration.getProperty("Constants.User.minPasswordLength", "8"));
         public static final String FIELD_CHANGELOG_READ = "changelogRead";
         public static final String FIELD_IGNORE_CHANGELOG = "ignoreChangeLog";
+        public static final String FIELD_EULA = "eula";
     }
 
     public static class UserRole {
@@ -90,7 +91,7 @@ public class Constants {
         public static final String CONSUMER_ID = Play.configuration.getProperty("mobileConnect.consumerId", "");
         public static final String CONSUMER_SECRET = Play.configuration.getProperty("mobileConnect.consumerSecret", "");
         public static final String REDIRECT_URI = Play.configuration.getProperty("application.baseUrl") != null && Play.configuration.getProperty("mobileConnect.redirectUri") != null ?
-                                                        Play.configuration.getProperty("application.baseUrl") + Play.configuration.getProperty("mobileConnect.redirectUri") : "";
+                Play.configuration.getProperty("application.baseUrl") + Play.configuration.getProperty("mobileConnect.redirectUri") : "";
 
         public static class Token {
             public static final String GRANT_TYPE = Play.configuration.getProperty("mobileConnect.token.grantType", "authorization_code");
@@ -133,5 +134,23 @@ public class Constants {
         public static final String FIELD_COMMENT = "comment";
         public static final String FIELD_TAGS = "tags";
         public static final String FIELD_TICKET = "ticket";
+    }
+
+    public static class Swagger {
+        public static String SERVICE_URL;
+
+        static {
+            try {
+                SERVICE_URL = new StringBuilder()
+                        .append(Play.configuration.getProperty("swagger.url", ""))
+                        .append("?url=")
+                        .append(URLEncoder.encode(Play.configuration.getProperty("application.baseUrl", "") + "/", "UTF-8"))
+                        .append(URLEncoder.encode(Play.configuration.getProperty("swagger.configFile", ""), "UTF-8"))
+                        .toString();
+            } catch (UnsupportedEncodingException e) {
+                SERVICE_URL = "";
+            }
+        }
+
     }
 }

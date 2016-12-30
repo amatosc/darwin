@@ -105,5 +105,6 @@ public class Changelog extends WebSecurityController {
             user.setIgnoreChangelog(ignore);
             user.save();
         }
+        showUserChangelog();
     }
 }

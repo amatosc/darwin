@@ -1,0 +1,27 @@
+#{stylesheet 'basic.css' /}
+#{form @Secure.acceptEulaSave(), method:'POST'}
+<h2 class="text-left">&{'Secure.eula.title'}</h2>
+
+    #{ifErrors}
+    <div class="error">
+    ${errors[0]}
+    </div>
+    #{/ifErrors}
+
+<h5>&{'Secure.eula.message'}</h5>
+
+<div class="checkbox">
+    <label>
+        <input type="checkbox" required name="eula" id="eula"> &{'Public.register.eula', models.Config.getEulaFile()}
+    </label>
+</div>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="form-actions">
+            <button type="submit" class="btn-bezel btn-primary pull-right">
+            &{'Secure.eula.acceptButton'} <i class="material-icons">forward</i>
+            </button>
+        </div>
+    </div>
+</div>
+#{/form}

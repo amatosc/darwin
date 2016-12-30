@@ -25,6 +25,7 @@ logs
 /modules
 precompiled
 bin
+lib
 project/project
 project/target
 target
@@ -35,7 +36,7 @@ server.pid
 *.eml
 *.tar.gz
 commands.pyc
-dist/
+dist
 modules/
 
 #Eclipse

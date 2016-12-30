@@ -245,10 +245,14 @@ public class MongoFactory extends DarwinFactory {
         return null;
     }
 
-
     @Override
     public User buildUser(String name, String email, String password) {
-        return new User(new MongoUser(name, email, password));
+        return new User(new MongoUser(name, email, password, false));
+    }
+
+    @Override
+    public User buildUser(String name, String email, String password, Boolean eula) {
+        return new User(new MongoUser(name, email, password, eula));
     }
 
     protected User buildUser(DBObject user) {

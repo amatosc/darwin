@@ -760,3 +760,7 @@ form:last-child .account-row {
     background: url('../images/icons/icn_logout_w.svg') no-repeat;
     background-size: 20px 20px;
 }
+
+.nopadding {
+    padding: 0 !important;
+}

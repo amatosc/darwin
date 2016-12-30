@@ -11,6 +11,8 @@ import models.exception.PasswordConstraintViolationException;
 import models.factory.DarwinFactory;
 import models.latch.LatchSDK;
 import models.logger.Logger;
+import play.Play;
+import play.i18n.Lang;
 
 public class User {
 
@@ -261,6 +263,10 @@ public class User {
         return this.impl.isChangelogRead();
     }
 
+    public boolean isEulaAccepted() {
+        return this.impl.isEula();
+    }
+
     public void setChangelogRead(boolean changelogRead) {
         this.impl.setChangelogRead(changelogRead);
     }
@@ -310,6 +316,11 @@ public class User {
         params.put("email", this.getEmail());
         params.put("name", this.getName());
         logger.log(Constants.Logger.CREATE_USER_ACTION, params);
+    }
+
+    public void markEulaAsAccepted() {
+        this.impl.setEula(true);
+        this.impl.save();
     }
 
     public UserImpl getImplementation(){

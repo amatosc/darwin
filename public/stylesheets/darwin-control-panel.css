@@ -16,7 +16,7 @@
     margin-bottom: 0;
 }
 
-.control-panel .white-box input, .control-panel .white-box textarea {
+.control-panel .white-box input {
     background: #F1F1F1;
 }
 
@@ -405,28 +405,6 @@
 }
 
 .role .form-actions {
-    position: absolute;
-    right: 0;
-    top: 0;
-    margin-right: 10px;
-}
-
-/* CHANGELOG */
-
-.changelog .changelog-title,
-.changelog .changelog-title a,
-.changelog .changelog-title a:hover,
-.changelog .changelog-title a:focus {
-    color: #2D0038;
-    text-decoration: none;
-    margin: 0;
-    width: 100%;
-    overflow: hidden;
-    display: block;
-    margin: 2px 0 3px 0;
-}
-
-.changelog .changelog-title + .form-actions {
     position: absolute;
     right: 0;
     top: 0;

@@ -30,7 +30,7 @@ public abstract class ExternalAPITestBase extends ApiTestBase {
 
     private String DEBUG_PARAMS = APIController.HTTP_DEBUG_TIME;
 
-    private void assertBasics(Response response) throws UnsupportedEncodingException {
+    protected void assertBasics(Response response) throws UnsupportedEncodingException {
         //Logger.info(response.out.toString("utf-8"));
         assertIsOk(response);
         assertContentType("application/json", response);

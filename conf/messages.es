@@ -6,6 +6,9 @@ secure.remember=Recuérdame
 secure.signin=Iniciar sesión
 secure.error=Usuario o contraseña incorrectos.
 secure.logout=Tu sesión ha finalizado.
+Secure.eula.title=Acptar EULA
+Secure.eula.message=Hemos añadido o modificado nuestra EULA, por favor, tienes que aceptarla antes de continuar.
+Secure.eula.acceptButton=Acepto
 
 ##### Language #####
 Languages.title=Idioma
@@ -97,7 +100,6 @@ Invitations.index.modal.deleteConfirm=Si, borrar invitación
 Public.register.title=Registro
 Public.register.name=Nombre
 Public.register.email=Email
-Public.register.password=Contraseña
 Public.register.password=Nueva contraseña (min. %s caracteres)
 Public.register.passwordCheck=Confirmar contraseña
 Public.register.registerButton=Registrarse
@@ -109,6 +111,8 @@ Public.register.validation.passwordConfirmation=Confirma la contraseña
 Public.register.validation.passwordPolicy=La contraseña debe tener 8 caracteres como mínimo
 Public.register.validation.passwordMismatch=Las contraseñas no coinciden
 Public.register.validation.existingAccount=Esta cuenta ya existe. ¿Olvidaste tu contraseña?
+Public.register.eula=Acepto los terminos de la <a id="register-a-eula" class="btn btn-link nopadding" href="%s" target="_blank">EULA</a>
+Public.register.validation.eulaMustBeenAccepted=El obligatorio aceptar la EULA.
 
 ##### APIClients #####
 APIClients.index.newAPIClient.title=Crear Cliente API

@@ -77,6 +77,11 @@ GET     /mobileConnectCb                            Security.authorizeCallback
 POST    /mobileConnect/accounts                     Security.checkAccountChoices
 
 # Secure
-GET         /login          Secure.login
-POST        /login          Secure.authenticate
-POST        /logout         Security.logout
+GET     /login                                      Secure.login
+POST    /login                                      Secure.authenticate
+POST    /logout                                     Security.logout
+GET     /eula                                       Secure.acceptEula
+POST    /eula/save                                  Secure.acceptEulaSave
+
+# Public
+GET     /public/                                    staticDir:public

@@ -16,6 +16,7 @@ public abstract class UserImpl {
     protected String email;
     protected String password;
     protected boolean active;
+    protected boolean eula;
     protected Date passwordChange;
     protected int authenticationAttempts;
     protected Date created;
@@ -34,7 +35,7 @@ public abstract class UserImpl {
 
     protected UserImpl() {}
 
-    protected UserImpl(String name, String email, String password) {
+    protected UserImpl(String name, String email, String password, Boolean eula) {
         this.name = name;
         this.email = email;
         this.password = AuthUtils.hashPassword(password, email);
@@ -42,6 +43,7 @@ public abstract class UserImpl {
         this.passwordChange = new Date();
         this.authenticationAttempts = 0;
         this.active = isUserActivable();
+        this.eula = eula == null ? false : eula;
         this.preferredLang = WebController.getLanguage();
         this.roleId = isAdminUser() ? Constants.UserRole.SUPER_ADMIN : Constants.UserRole.DEFAULT_ROLE;
         this.enabledLatchAlertMessage = true;
@@ -173,6 +175,14 @@ public abstract class UserImpl {
 
     public void setEnabledLatchAlertMessage(boolean enabledLatchAlertMessage) {
         this.enabledLatchAlertMessage = enabledLatchAlertMessage;
+    }
+
+    public boolean isEula() {
+        return eula;
+    }
+
+    public void setEula(boolean eula) {
+        this.eula = eula;
     }
 
     public Queue<String> getOldPasswords() {

@@ -6,6 +6,9 @@ secure.remember=Remember me
 secure.signin=Sign in
 secure.error=Oops, unknown username or password.
 secure.logout=You have been logged out.
+Secure.eula.title=Accept the EULA
+Secure.eula.message=We are added or modified our EULA, please you must accepted it before to continue.
+Secure.eula.acceptButton=Accept
 
 ##### Language #####
 Languages.title=Language
@@ -111,6 +114,8 @@ Public.register.validation.passwordConfirmation=Please confirm your password
 Public.register.validation.passwordPolicy=The password must at least of 8 characters
 Public.register.validation.passwordMismatch=Your passwords do not match
 Public.register.validation.existingAccount=This account is already registered. Forgot your password?
+Public.register.eula=Accept the terms of <a id="register-a-eula" class="btn btn-link nopadding" href="%s" target="_blank">EULA</a>
+Public.register.validation.eulaMustBeenAccepted=You must to accept the EULA
 
 ##### APIClients #####
 APIClients.index.newAPIClient.title=Create New API Client

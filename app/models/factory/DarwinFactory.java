@@ -54,6 +54,7 @@ public abstract class DarwinFactory {
     public abstract User loadUserByActivationToken(String token);
     public abstract User loadUserByResetToken(String token);
     public abstract User buildUser(String name, String email, String password);
+    public abstract User buildUser(String name, String email, String password, Boolean eula);
     public abstract UsersContainer retrieveUsers(Map<String, Object> query, int limit, int offset);
     public abstract UsersContainer retrieveUsers(String field, Object value, int limit, int offset);
     public abstract List<User> retrieveUsersByMobileConnectToken(String token);

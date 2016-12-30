@@ -1,10 +1,7 @@
 package controllers;
 
-import notifiers.ContactSubject;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-
 import models.Config;
+import models.Constants;
 import models.exception.DarwinErrorException;
 import models.exception.PasswordConstraintViolationException;
 import models.factory.DarwinFactory;
@@ -14,7 +11,10 @@ import models.user.ActivationType;
 import models.user.User;
 import models.validation.Password;
 import net.sf.oval.constraint.Email;
+import notifiers.ContactSubject;
 import notifiers.DarwinMailer;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import play.Logger;
 import play.data.validation.Required;
 import play.exceptions.MailException;
@@ -34,13 +34,17 @@ public class PublicContentBase extends WebController {
                                        @Email(message = "Public.register.validation.invalidFormat") String email,
                                        @Password @Required(message = "Public.register.validation.password") String password,
                                        @Required(message = "Public.register.validation.passwordConfirmation") String passwordCheck,
-                                       String token) {
+                                       String token, Boolean eula) {
 
         checkAuthenticity();
 
         ActivationType activationType = Config.getUserActivationType();
         if (ActivationType.INVITATION.equals(activationType) && !Config.isAutoActivatedUser(email)) {
             validation.required(token);
+        }
+
+        if (Config.isEulaRequired()) {
+            validation.isTrue(eula).message("Public.register.validation.eulaMustBeenAccepted");
         }
 
         email = email.trim().toLowerCase();
@@ -53,7 +57,7 @@ public class PublicContentBase extends WebController {
             register(token, email);
         }
 
-        User user = DarwinFactory.getInstance().buildUser(name, email, password);
+        User user = DarwinFactory.getInstance().buildUser(name, email, password, eula);
         boolean existingUser = user.isExistingUser();
         validation.isTrue(!existingUser).message("Public.register.validation.existingAccount").key("name");
         if (validation.hasErrors()) {

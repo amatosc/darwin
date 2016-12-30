@@ -1,6 +1,9 @@
 package controllers;
 
+import models.Config;
+import models.user.User;
 import play.Play;
+import play.data.validation.IsTrue;
 import play.data.validation.Required;
 import play.libs.Crypto;
 import play.libs.Time;
@@ -19,28 +22,44 @@ public class Secure extends DarwinController {
         WebController.configureLanguage();
     }
 
-    @Before(unless={"login", "authenticate", "logout"})
+    @Before(unless = {"login", "authenticate", "logout"})
     static void checkAccess() throws Throwable {
         // Authent
-        if(!session.contains("username") || !controllers.Security.isCookieValid()) {
-            flash.put("url", "GET".equals(request.method) ? request.url : (String)DarwinHooks.AppHooks.invoke("onUrlAfterLogin")); // seems a good default
+        if (!session.contains("username") || !controllers.Security.isCookieValid()) {
+            flash.put("url", "GET".equals(request.method) ? request.url : (String) DarwinHooks.AppHooks.invoke("onUrlAfterLogin")); // seems a good default
             login();
         }
+
         // Checks
         Check check = getActionAnnotation(Check.class);
-        if(check != null) {
+        if (check != null) {
             check(check);
         }
         check = getControllerInheritedAnnotation(Check.class);
-        if(check != null) {
+        if (check != null) {
             check(check);
         }
     }
 
+    @Before(unless = {"login", "authenticate", "logout", "acceptEula", "acceptEulaSave"})
+    static void checkEula() throws Throwable {
+        if (Config.isEulaRequired()) {
+            User user = WebController.getCurrentUser();
+            if (user == null) {
+                login();
+            }
+
+            if (!user.isEulaAccepted()) {
+                flash.put("url", "GET".equals(request.method) ? request.url : (String) DarwinHooks.AppHooks.invoke("onUrlAfterLogin"));
+                acceptEula();
+            }
+        }
+    }
+
     private static void check(Check check) throws Throwable {
-        for(String profile : check.value()) {
-            boolean hasProfile = (Boolean)Security.invoke("check", profile);
-            if(!hasProfile) {
+        for (String profile : check.value()) {
+            boolean hasProfile = (Boolean) Security.invoke("check", profile);
+            if (!hasProfile) {
                 Security.invoke("onCheckFailed", profile);
             }
         }
@@ -65,13 +84,13 @@ public class Secure extends DarwinController {
                 if (expirationDate == null || expirationDate.before(now)) {
                     logout();
                 }
-                if(Crypto.sign(restOfCookie).equals(sign)) {
+                if (Crypto.sign(restOfCookie).equals(sign)) {
 
                     boolean renewCookie = controllers.Security.isCookieExpired();
 
                     controllers.Security.markSessionAsValid(renewCookie);
                     controllers.Security.generateRedirectURL();
-                    
+
                     session.put("username", username);
 
                     redirectToOriginalURL();
@@ -88,12 +107,12 @@ public class Secure extends DarwinController {
         Boolean allowed = false;
         try {
             // This is the deprecated method name
-            allowed = (Boolean)Security.invoke("authentify", username, password);
-        } catch (UnsupportedOperationException e ) {
+            allowed = (Boolean) Security.invoke("authentify", username, password);
+        } catch (UnsupportedOperationException e) {
             // This is the official method name
-            allowed = (Boolean)Security.invoke("authenticate", username, password);
+            allowed = (Boolean) Security.invoke("authenticate", username, password);
         }
-        if(validation.hasErrors() || !allowed) {
+        if (validation.hasErrors() || !allowed) {
             flash.keep("url");
             flash.error("secure.error");
             params.flash();
@@ -102,10 +121,10 @@ public class Secure extends DarwinController {
         // Mark user as connected
         session.put("username", username);
         // Remember if needed
-        if(remember) {
+        if (remember) {
             Date expiration = new Date();
-            String duration = Play.configuration.getProperty("secure.rememberme.duration","30d"); 
-            expiration.setTime(expiration.getTime() + Time.parseDuration(duration) * 1000L );
+            String duration = Play.configuration.getProperty("secure.rememberme.duration", "30d");
+            expiration.setTime(expiration.getTime() + Time.parseDuration(duration) * 1000L);
             response.setCookie("rememberme", Crypto.sign(username + "-" + expiration.getTime()) + "-" + username + "-" + expiration.getTime(), duration);
 
         }
@@ -122,12 +141,33 @@ public class Secure extends DarwinController {
         login();
     }
 
+    public static void acceptEula() throws Throwable {
+        render();
+    }
+
+    public static void acceptEulaSave(@IsTrue(message = "Public.register.validation.eulaMustBeenAccepted") Boolean eula) throws Throwable {
+        checkAuthenticity();
+
+        if (validation.hasErrors()) {
+            validation.keep();
+            acceptEula();
+        }
+
+        User user = WebController.getCurrentUser();
+        if (user == null) {
+            login();
+        }
+
+        user.markEulaAsAccepted();
+        redirectToOriginalURL();
+    }
+
     // ~~~ Utils
 
     static void redirectToOriginalURL() throws Throwable {
         Security.invoke("onAuthenticated");
         String url = flash.get("url");
-        if(url == null) {
+        if (url == null) {
             url = Play.ctxPath + "/";
         }
         redirect(url);
@@ -136,11 +176,10 @@ public class Secure extends DarwinController {
     public static class Security extends Controller {
 
         /**
-         * @Deprecated
-         * 
          * @param username
          * @param password
          * @return
+         * @Deprecated
          */
         static boolean authentify(String username, String password) {
             throw new UnsupportedOperationException();
@@ -161,7 +200,7 @@ public class Secure extends DarwinController {
 
         /**
          * This method checks that a profile is allowed to view this page/method. This method is called prior
-         * to the method's controller annotated with the @Check method. 
+         * to the method's controller annotated with the @Check method.
          *
          * @param profile
          * @return true if you are allowed to execute this controller method.
@@ -172,6 +211,7 @@ public class Secure extends DarwinController {
 
         /**
          * This method returns the current connected username
+         *
          * @return
          */
         static String connected() {
@@ -180,7 +220,8 @@ public class Secure extends DarwinController {
 
         /**
          * Indicate if a user is currently connected
-         * @return  true if the user is connected
+         *
+         * @return true if the user is connected
          */
         static boolean isConnected() {
             return session.contains("username");
@@ -193,14 +234,14 @@ public class Secure extends DarwinController {
         static void onAuthenticated() {
         }
 
-         /**
+        /**
          * This method is called before a user tries to sign off.
          * You need to override this method if you wish to perform specific actions (eg. Record the name of the user who signed off)
          */
         static void onDisconnect() {
         }
 
-         /**
+        /**
          * This method is called after a successful sign off.
          * You need to override this method if you wish to perform specific actions (eg. Record the time the user signed off)
          */
@@ -209,6 +250,7 @@ public class Secure extends DarwinController {
 
         /**
          * This method is called if a check does not succeed. By default it shows the not allowed page (the controller forbidden method).
+         *
          * @param profile
          */
         static void onCheckFailed(String profile) {
@@ -218,8 +260,8 @@ public class Secure extends DarwinController {
         private static Object invoke(String m, Object... args) throws Throwable {
 
             try {
-                return Java.invokeChildOrStatic(Security.class, m, args);       
-            } catch(InvocationTargetException e) {
+                return Java.invokeChildOrStatic(Security.class, m, args);
+            } catch (InvocationTargetException e) {
                 throw e.getTargetException();
             }
         }

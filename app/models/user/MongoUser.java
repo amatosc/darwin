@@ -18,8 +18,8 @@ import java.util.List;
 
 public class MongoUser extends UserImpl {
 
-    public MongoUser(String name, String email, String password) {
-        super(name, email, password);
+    public MongoUser(String name, String email, String password, Boolean eula) {
+        super(name, email, password, eula);
     }
 
     public MongoUser(DBObject u) {
@@ -39,6 +39,7 @@ public class MongoUser extends UserImpl {
         this.enabledLatchAlertMessage = u.containsField(Constants.User.FIELD_ENABLED_ALERT_MESSAGE) && u.get(Constants.User.FIELD_ENABLED_ALERT_MESSAGE) != null ? (Boolean) u.get(Constants.User.FIELD_ENABLED_ALERT_MESSAGE) : true;
         this.changelogRead = u.containsField(Constants.User.FIELD_CHANGELOG_READ) ? (Boolean) u.get(Constants.User.FIELD_CHANGELOG_READ) : false;
         this.ignoreChangelog = u.containsField(Constants.User.FIELD_IGNORE_CHANGELOG) ? (Boolean) u.get(Constants.User.FIELD_IGNORE_CHANGELOG) : false;
+        this.eula = u.containsField(Constants.User.FIELD_EULA) ? (Boolean) u.get(Constants.User.FIELD_EULA) : false;
 
         if (Constants.User.MAX_OLD_PASSWORDS_STORED > 1) {
             this.oldPasswords = new CircularFifoQueue<String>(Constants.User.MAX_OLD_PASSWORDS_STORED - 1);
@@ -76,6 +77,7 @@ public class MongoUser extends UserImpl {
         basicDBObject.append(Constants.User.FIELD_CHANGELOG_READ, this.changelogRead);
         basicDBObject.append(Constants.User.FIELD_IGNORE_CHANGELOG, this.ignoreChangelog);
         basicDBObject.append(Constants.User.FIELD_OLD_PASSWORDS, this.oldPasswords);
+        basicDBObject.append(Constants.User.FIELD_EULA, this.eula);
         basicDBObject = beforeGetAsDBObject(basicDBObject);
         return basicDBObject;
     }

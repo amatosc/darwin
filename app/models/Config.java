@@ -3,23 +3,24 @@ package models;
 import models.user.ActivationType;
 import play.Logger;
 import play.Play;
+import play.i18n.Lang;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class Config {
 
-    private static final String DB_NAME_DEFAULT = Play.configuration.getProperty("Config.dbNameDefault") != null ? Play.configuration.getProperty("Config.dbNameDefault") : "play_module" ;
-    private static final String DB_NAME_PROPERTY_PREFIX = Play.configuration.getProperty("Config.dbNamePropertyPrefix") != null ? Play.configuration.getProperty("Config.dbNamePropertyPrefix") : "play_module.db." ;
-    private static final String DB_NAME_PROPERTY_SUFFIX = Play.configuration.getProperty("Config.dbNamePropertySuffix") != null ? Play.configuration.getProperty("Config.dbNamePropertySuffix") : ".name" ;
+    private static final String DB_NAME_DEFAULT = Play.configuration.getProperty("Config.dbNameDefault") != null ? Play.configuration.getProperty("Config.dbNameDefault") : "play_module";
+    private static final String DB_NAME_PROPERTY_PREFIX = Play.configuration.getProperty("Config.dbNamePropertyPrefix") != null ? Play.configuration.getProperty("Config.dbNamePropertyPrefix") : "play_module.db.";
+    private static final String DB_NAME_PROPERTY_SUFFIX = Play.configuration.getProperty("Config.dbNamePropertySuffix") != null ? Play.configuration.getProperty("Config.dbNamePropertySuffix") : ".name";
 
     private static final ActivationType ACTIVATION_USER_MODE = setActivationType();
-    private static final Boolean CREATE_DEFAULT_API_CLIENT = Play.configuration.getProperty("Config.createDefaultAPIClient") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("Config.createDefaultAPIClient")) : true ;
+    private static final Boolean CREATE_DEFAULT_API_CLIENT = Play.configuration.getProperty("Config.createDefaultAPIClient") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("Config.createDefaultAPIClient")) : true;
 
-    private static final boolean MOBILE_CONNECT_ACTIVE = Play.configuration.getProperty("mobileConnect.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("mobileConnect.active")) : true ;
-    private static final boolean MOBILE_CONNECT_WITH_LATCH_ACTIVE = Play.configuration.getProperty("mobileConnect.latch.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("mobileConnect.latch.active")) : false ;
+    private static final boolean MOBILE_CONNECT_ACTIVE = Play.configuration.getProperty("mobileConnect.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("mobileConnect.active")) : true;
+    private static final boolean MOBILE_CONNECT_WITH_LATCH_ACTIVE = Play.configuration.getProperty("mobileConnect.latch.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("mobileConnect.latch.active")) : false;
 
-    private static final boolean LATCH_ACTIVE = Play.configuration.getProperty("latch.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("latch.active")) : false ;
+    private static final boolean LATCH_ACTIVE = Play.configuration.getProperty("latch.active") != null ? (Boolean) Boolean.valueOf(Play.configuration.getProperty("latch.active")) : false;
     private static final String LATCH_MODE_NONE = "none";
     private static final String LATCH_MODE_ALERT = "alert";
     private static final String LATCH_MODE_MANDATORY = "pair_mandatory";
@@ -35,9 +36,11 @@ public class Config {
     private static final boolean CHANGE_LOG_ACTIVE = Boolean.parseBoolean(Play.configuration.getProperty("changelog.enabled", "false"));
 
     private static final boolean ZENDESK_ENABLED = Boolean.parseBoolean(Play.configuration.getProperty("zendesk.enabled", "false"));
+    private static final boolean IS_EULA_REQUIRED = Boolean.valueOf(Play.configuration.getProperty("eula.enabled", "false"));
 
     /**
      * Get the default database name
+     *
      * @return the default database name
      */
     public static String getDBName() {
@@ -46,6 +49,7 @@ public class Config {
 
     /**
      * Get the database name
+     *
      * @param alias the database alias
      * @return the database name
      */
@@ -75,7 +79,7 @@ public class Config {
         }
     }
 
-    public static ActivationType getUserActivationType(){
+    public static ActivationType getUserActivationType() {
         return ACTIVATION_USER_MODE;
     }
 
@@ -107,21 +111,21 @@ public class Config {
         return RESET_PASSWORD_POLICY.equals(RESET_PASSWORD_POLICY_FORBIDDEN_N_LAST_USED) || RESET_PASSWORD_POLICY.equals(RESET_PASSWORD_POLICY_BOTH);
     }
 
-    public static String getApplicationName(){
+    public static String getApplicationName() {
         if (Play.configuration.getProperty("Config.ApplicationName") != null && !Play.configuration.getProperty("Config.ApplicationName").isEmpty()) {
             return Play.configuration.getProperty("Config.ApplicationName");
-        }else{
+        } else {
             return "Darwin";
         }
     }
 
-    private static ActivationType setActivationType(){
+    private static ActivationType setActivationType() {
         ActivationType activationType = ActivationType.TOKEN;
         String aTypeStr = Play.configuration.getProperty("Config.userActivation", "token");
-        if (aTypeStr != null){
-            try{
+        if (aTypeStr != null) {
+            try {
                 activationType = ActivationType.valueOf(aTypeStr.toUpperCase());
-            }catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 Logger.error("Activation type is 'token' by default due to malformed application.conf");
             }
         }
@@ -134,5 +138,17 @@ public class Config {
 
     public static boolean isZendeskEnabled() {
         return ZENDESK_ENABLED;
+    }
+
+    public static boolean isEulaRequired() {
+        return IS_EULA_REQUIRED;
+    }
+
+    public static String getEulaFile() {
+        if(Play.configuration.containsKey("eula.file." + Lang.get())) {
+            return Play.configuration.getProperty("eula.file." + Lang.get());
+        } else {
+            return Play.configuration.getProperty("eula.file");
+        }
     }
 }
